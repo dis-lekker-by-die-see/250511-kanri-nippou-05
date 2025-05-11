@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ページビルダー</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="bg-red-50 font-sans">
+    <div class="container mx-auto p-4">
+      <h1 class="text-2xl font-bold mb-4">ページビルダー</h1>
+      <div class="flex gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">列数</label>
+          <input
+            id="cols"
+            type="number"
+            min="1"
+            value="1"
+            class="p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">行数</label>
+          <input
+            id="rows"
+            type="number"
+            min="1"
+            value="1"
+            class="p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+      </div>
+      <div id="grid" class="grid-container"></div>
+      <div class="flex justify-between mt-4">
+        <button
+          id="save"
+          class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        >
+          テンプレートを保存
+        </button>
+        <img src="logo.svg" alt="Logo" class="h-8" />
+      </div>
+    </div>
+
+    <!-- Component Selection Modal -->
+    <div id="selectModal" class="modal">
+      <div class="modal-content">
+        <h2 class="text-lg font-bold mb-4">コンポーネントを選択</h2>
+        <select
+          id="componentType"
+          class="p-2 border border-gray-300 rounded-md w-full mb-4"
+        >
+          <option value="blank">空白</option>
+          <option value="heading">見出し</option>
+          <option value="input">入力ボックス</option>
+          <option value="dropdown">ドロップダウン</option>
+          <option value="checkbox">チェックボックス</option>
+          <option value="textarea">テキストエリア</option>
+          <option value="table">表</option>
+        </select>
+        <div class="flex justify-end">
+          <button
+            onclick="closeModal('selectModal')"
+            class="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+          >
+            キャンセル
+          </button>
+          <button
+            onclick="applyComponent()"
+            class="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            適用
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customization Modal -->
+    <div id="customizeModal" class="modal">
+      <div class="modal-content">
+        <h2 class="text-lg font-bold mb-4">コンポーネントをカスタマイズ</h2>
+        <div id="customizeForm"></div>
+        <div class="flex justify-end">
+          <button
+            onclick="closeModal('customizeModal')"
+            class="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+          >
+            キャンセル
+          </button>
+          <button
+            onclick="applyCustomization()"
+            class="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            適用
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
