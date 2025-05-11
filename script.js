@@ -63,9 +63,10 @@ function renderGrid() {
     const controls = document.createElement("div");
     controls.className = "cell-controls";
     controls.innerHTML = `
-      <input type="number" min="1" max="6" value="${cell.rowSpan}" class="row-span">
-      <input type="number" min="1" max="6" value="${cell.colSpan}" class="col-span">
+      <input type="number" min="1" value="${cell.rowSpan}" class="row-span">
+      <input type="number" min="1" value="${cell.colSpan}" class="col-span">
     `;
+
     div.appendChild(controls);
 
     // Actions
@@ -145,13 +146,21 @@ function renderGrid() {
       const row = parseInt(div.dataset.row);
       const col = parseInt(div.dataset.col);
       currentCell = gridState.find((c) => c.row === row && c.col === col);
+      // currentCell.rowSpan = Math.max(
+      //   1,
+      //   Math.min(6, parseInt(div.querySelector(".row-span").value) || 1)
+      // );
       currentCell.rowSpan = Math.max(
         1,
-        Math.min(6, parseInt(div.querySelector(".row-span").value) || 1)
+        parseInt(div.querySelector(".row-span").value) || 1
       );
+      // currentCell.colSpan = Math.max(
+      //   1,
+      //   Math.min(6, parseInt(div.querySelector(".col-span").value) || 1)
+      // );
       currentCell.colSpan = Math.max(
         1,
-        Math.min(6, parseInt(div.querySelector(".col-span").value) || 1)
+        parseInt(div.querySelector(".col-span").value) || 1
       );
       renderGrid();
       currentCell = null;
@@ -268,25 +277,136 @@ function applyCustomization() {
   closeModal("customizeModal");
 }
 
+// function saveLayout() {
+//   try {
+//     // Track occupied cells
+//     const occupied = new Set();
+//     gridState.forEach((cell) => {
+//       for (let i = cell.row; i < cell.row + cell.rowSpan; i++) {
+//         for (let j = cell.col; j < cell.col + cell.colSpan; j++) {
+//           occupied.add(`${i}-${j}`);
+//         }
+//       }
+//     });
+
+//     // Filter out overlapped cells
+//     const visibleCells = gridState.filter((cell) => {
+//       const primaryCell =
+//         occupied.has(`${cell.row}-${cell.col}`) &&
+//         gridState.find((c) => c.row === cell.row && c.col === cell.col) ===
+//           cell;
+//       return primaryCell;
+//     });
+
+//     // Generate JSON
+//     const json = {
+//       data_tables: visibleCells.map((cell) => ({
+//         見出し: cell.content.text || `表 ${cell.row}-${cell.col}`,
+//         表: {
+//           識別子: `table_${cell.row}_${cell.col}`,
+//           列:
+//             cell.type === "table"
+//               ? (cell.content.headers || []).map((h, i) => ({
+//                   名前: `col_${i}`,
+//                   ラベル: h,
+//                   タイプ: "テキスト",
+//                   編集可能: true,
+//                 }))
+//               : [
+//                   {
+//                     名前: "データ",
+//                     ラベル: "データ",
+//                     タイプ:
+//                       cell.type === "dropdown" ? "ドロップダウン" : cell.type,
+//                     編集可能: true,
+//                   },
+//                 ],
+//           行:
+//             cell.type === "table"
+//               ? Array(parseInt(cell.content.rows || 2))
+//                   .fill()
+//                   .map((_, i) =>
+//                     Array(cell.content.headers?.length || 3).fill({
+//                       値: i === 0 ? `例）データ` : "",
+//                     })
+//                   )
+//               : [
+//                   [
+//                     {
+//                       値:
+//                         cell.content.text ||
+//                         cell.content.placeholder ||
+//                         cell.content.label ||
+//                         "例）データ",
+//                     },
+//                   ],
+//                 ],
+//         },
+//         ノート: {
+//           タイプ: "テキストエリア",
+//           名前: `ノート_${cell.row}_${cell.col}`,
+//           ラベル: "ノート",
+//           値: "",
+//           編集可能: true,
+//         },
+//       })),
+//       アクション: [
+//         {
+//           タイプ: "ボタン",
+//           名前: "提出",
+//           ラベル: "完了",
+//           アクション: "提出_フォーム",
+//         },
+//       ],
+//     };
+
+//     // Download JSON
+//     const blob = new Blob([JSON.stringify(json, null, 2)], {
+//       type: "application/json",
+//     });
+//     const url = URL.createObjectURL(blob);
+//     const a = document.createElement("a");
+//     a.href = url;
+//     a.download = "template.json";
+//     a.click();
+//     URL.revokeObjectURL(url);
+//   } catch (error) {
+//     console.error("Failed to save layout:", error);
+//     alert("テンプレートの保存に失敗しました。コンソールを確認してください。");
+//   }
+// }
+
 function saveLayout() {
   try {
-    // Track occupied cells
-    const occupied = new Set();
+    // Track occupied cells and their primary cells
+    const occupied = new Map();
     gridState.forEach((cell) => {
       for (let i = cell.row; i < cell.row + cell.rowSpan; i++) {
         for (let j = cell.col; j < cell.col + cell.colSpan; j++) {
-          occupied.add(`${i}-${j}`);
+          const key = `${i}-${j}`;
+          // Store the cell with the largest span (highest z-index) for each position
+          if (
+            !occupied.has(key) ||
+            cell.rowSpan * cell.colSpan >
+              occupied.get(key).rowSpan * occupied.get(key).colSpan
+          ) {
+            occupied.set(key, cell);
+          }
         }
       }
     });
 
     // Filter out overlapped cells
     const visibleCells = gridState.filter((cell) => {
-      const primaryCell =
-        occupied.has(`${cell.row}-${cell.col}`) &&
-        gridState.find((c) => c.row === cell.row && c.col === cell.col) ===
-          cell;
-      return primaryCell;
+      // Check if the cell is the primary occupant for at least one of its positions
+      for (let i = cell.row; i < cell.row + cell.rowSpan; i++) {
+        for (let j = cell.col; j < cell.col + cell.colSpan; j++) {
+          if (occupied.get(`${i}-${j}`) === cell) {
+            return true;
+          }
+        }
+      }
+      return false;
     });
 
     // Generate JSON
@@ -366,7 +486,6 @@ function saveLayout() {
     alert("テンプレートの保存に失敗しました。コンソールを確認してください。");
   }
 }
-
 // Initialize grid and listeners
 document.getElementById("cols").addEventListener("input", updateGrid);
 document.getElementById("rows").addEventListener("input", updateGrid);
