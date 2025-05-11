@@ -15,35 +15,35 @@
       <h1 class="text-2xl font-bold mb-4">ページビルダー</h1>
       <div class="flex gap-4 mb-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700">列数</label>
+          <label class="block text-sm font-medium text-gray-700"
+            >ラベル列幅 (px)</label
+          >
           <input
-            id="cols"
+            id="labelWidth"
             type="number"
-            min="1"
-            value="1"
-            class="p-2 border border-gray-300 rounded-md"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">行数</label>
-          <input
-            id="rows"
-            type="number"
-            min="1"
-            value="1"
+            min="100"
+            value="200"
             class="p-2 border border-gray-300 rounded-md"
           />
         </div>
       </div>
-      <div id="grid" class="grid-container"></div>
-      <div class="flex justify-between mt-4">
+      <div id="outerGrid" class="outer-grid"></div>
+      <div class="flex flex-col gap-4 mt-4">
         <button
-          id="save"
-          class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          id="addRow"
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          テンプレートを保存
+          行を追加
         </button>
-        <img src="logo.svg" alt="Logo" class="h-8" />
+        <div class="flex justify-between">
+          <button
+            id="save"
+            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
+            テンプレートを保存
+          </button>
+          <img src="logo.svg" alt="Logo" class="h-8" />
+        </div>
       </div>
     </div>
 
@@ -57,7 +57,10 @@
         >
           <option value="blank">空白</option>
           <option value="heading">見出し</option>
+          <option value="label">ラベル</option>
+          <option value="text">テキスト</option>
           <option value="input">入力ボックス</option>
+          <option value="date">日付</option>
           <option value="dropdown">ドロップダウン</option>
           <option value="checkbox">チェックボックス</option>
           <option value="textarea">テキストエリア</option>

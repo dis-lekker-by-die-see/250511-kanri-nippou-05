@@ -1,9 +1,41 @@
+.outer-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  width: 100%;
+}
+.outer-row {
+  display: contents;
+}
+.label-cell {
+  padding: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+.label-cell input {
+  width: 100%;
+  padding: 4px;
+  font-size: 14px;
+}
+.content-cell {
+  padding: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  position: relative;
+}
+.delete-row {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
 .grid-container {
   background-color: #f6f9ff;
   display: grid;
   gap: 0;
   width: 100%;
-  min-height: 400px;
+  min-height: 3.2em;
   border: 1px solid #d80012;
 }
 .grid-cell {
@@ -25,7 +57,7 @@
 }
 .cell-actions {
   position: absolute;
-  top: 30px; /*vertical position of emojis*/
+  top: 30px;
   right: 3px;
   display: flex;
   gap: 5px;
@@ -75,4 +107,8 @@ textarea {
   width: 100%;
   padding: 4px;
   box-sizing: border-box;
+}
+h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
 }
